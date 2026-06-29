@@ -1,7 +1,17 @@
-export async function onRequestGet({ env }) {
+import { requireUser } from "../_auth.js";
+
+export async function onRequestGet({ request, env }) {
+  const auth = await requireUser(request, env);
+
+  if (auth.error) {
+    return auth.error;
+  }
+
   const { results } = await env.DB.prepare(
-    "SELECT id, filename, content_type, created_at, title, tags, favorite FROM photos ORDER BY created_at DESC"
-  ).all();
+    "SELECT id, filename, content_type, created_at, title, tags, favorite FROM photos WHERE user_id = ? ORDER BY created_at DESC"
+  )
+    .bind(auth.user.id)
+    .all();
 
   const photos = results.map((photo) => ({
     ...photo,
@@ -12,6 +22,12 @@ export async function onRequestGet({ env }) {
 }
 
 export async function onRequestPost({ request, env }) {
+  const auth = await requireUser(request, env);
+
+  if (auth.error) {
+    return auth.error;
+  }
+
   const formData = await request.formData();
   const file = formData.get("photo");
 
@@ -20,7 +36,7 @@ export async function onRequestPost({ request, env }) {
   }
 
   const id = crypto.randomUUID();
-  const r2Key = `photos/${id}-${file.name}`;
+  const r2Key = `users/${auth.user.id}/photos/${id}-${file.name}`;
   const createdAt = new Date().toISOString();
 
   await env.PHOTOS_BUCKET.put(r2Key, await file.arrayBuffer(), {
@@ -31,17 +47,11 @@ export async function onRequestPost({ request, env }) {
 
   await env.DB.prepare(
     `INSERT INTO photos 
-     (id, filename, content_type, r2_key, created_at, title, tags, favorite)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+     (id, user_id, filename, content_type, r2_key, created_at, title, tags, favorite)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
   )
-    .bind(id, file.name, file.type, r2Key, createdAt, "", "", 0)
+    .bind(id, auth.user.id, file.name, file.type, r2Key, createdAt, "", "", 0)
     .run();
 
-  return Response.json({
-    id,
-    filename: file.name,
-    content_type: file.type,
-    created_at: createdAt,
-    imageUrl: `/api/photos/${id}`,
-  });
+  return Response.json({ success: true });
 }
