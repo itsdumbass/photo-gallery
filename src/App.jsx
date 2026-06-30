@@ -88,31 +88,51 @@ function App() {
       setLoading(false);
       return;
     }
-
+  
     setLoading(true);
-
+  
     const token = await currentUser.getIdToken();
-
-    const response = await fetch("/api/photos", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+  
+    const response = await fetch("/api/photos", { headers });
+  
     if (!response.ok) {
       setPhotos([]);
       setLoading(false);
       return;
     }
-
+  
     const savedPhotos = await response.json();
-
-    if (Array.isArray(savedPhotos)) {
-      setPhotos(savedPhotos);
-    } else {
+  
+    if (!Array.isArray(savedPhotos)) {
       setPhotos([]);
+      setLoading(false);
+      return;
     }
-
+  
+    const photosWithImages = await Promise.all(
+      savedPhotos.map(async (photo) => {
+        const imageResponse = await fetch(photo.imageUrl, { headers });
+      
+        if (!imageResponse.ok) {
+          return {
+            ...photo,
+            displayUrl: "",
+          };
+        }
+      
+        const imageBlob = await imageResponse.blob();
+      
+        return {
+          ...photo,
+          displayUrl: URL.createObjectURL(imageBlob),
+        };
+      })
+    );
+  
+    setPhotos(photosWithImages);
     setLoading(false);
   }
 
@@ -242,7 +262,11 @@ function App() {
         <section className="gallery">
           {photos.map((photo) => (
             <div className="photoCard" key={photo.id}>
-              <img src={photo.imageUrl} alt={photo.filename} />
+              {photo.displayUrl ? (
+                <img src={photo.displayUrl} alt={photo.filename} />
+              ) : (
+                <div className="imageError">Image could not load</div>
+              )}
 
               <button
                 className="deleteButton"
