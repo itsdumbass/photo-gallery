@@ -91,7 +91,7 @@ function App() {
   
     setLoading(true);
   
-    const token = await currentUser.getIdToken();
+    const token = await currentUser.getIdToken(true);
     const headers = {
       Authorization: `Bearer ${token}`,
     };
