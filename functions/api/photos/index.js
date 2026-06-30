@@ -34,6 +34,14 @@ export async function onRequestPost({ request, env }) {
   if (!file) {
     return Response.json({ error: "No photo uploaded" }, { status: 400 });
   }
+  const maxImageSize = 8 * 1024 * 1024;
+
+  if (file.size > maxImageSize) {
+    return Response.json(
+      { error: "Image must be less than 8 MB" },
+      { status: 413 }
+    );
+  }
 
   const id = crypto.randomUUID();
   const r2Key = `users/${auth.user.id}/photos/${id}-${file.name}`;

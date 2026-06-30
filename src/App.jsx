@@ -3,6 +3,70 @@ import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
 import { auth, googleProvider } from "./firebase";
 import "./App.css";
 
+const MAX_IMAGE_SIZE = 8 * 1024 * 1024;
+
+function loadImageFromFile(file) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = reject;
+    image.src = URL.createObjectURL(file);
+  });
+}
+
+async function compressImageUnder8MB(file) {
+  if (file.size <= MAX_IMAGE_SIZE) {
+    return file;
+  }
+
+  const image = await loadImageFromFile(file);
+
+  let width = image.width;
+  let height = image.height;
+  let quality = 0.85;
+
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  let compressedBlob = null;
+
+  for (let attempt = 0; attempt < 12; attempt++) {
+    canvas.width = width;
+    canvas.height = height;
+
+    context.clearRect(0, 0, width, height);
+    context.drawImage(image, 0, 0, width, height);
+
+    compressedBlob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, "image/jpeg", quality);
+    });
+
+    if (compressedBlob && compressedBlob.size <= MAX_IMAGE_SIZE) {
+      break;
+    }
+
+    quality -= 0.08;
+
+    if (quality < 0.45) {
+      width = Math.round(width * 0.85);
+      height = Math.round(height * 0.85);
+      quality = 0.8;
+    }
+  }
+
+  URL.revokeObjectURL(image.src);
+
+  if (!compressedBlob || compressedBlob.size > MAX_IMAGE_SIZE) {
+    throw new Error(`${file.name} could not be compressed under 8 MB`);
+  }
+
+  const cleanName = file.name.replace(/\.[^/.]+$/, "");
+
+  return new File([compressedBlob], `${cleanName}.jpg`, {
+    type: "image/jpeg",
+  });
+}
+
 function App() {
   const [user, setUser] = useState(null);
   const [photos, setPhotos] = useState([]);
@@ -70,22 +134,38 @@ function App() {
 
     setUploading(true);
 
-    const headers = await getAuthHeaders();
+    try {
+      const headers = await getAuthHeaders();
 
-    for (const file of selectedFiles) {
-      const formData = new FormData();
-      formData.append("photo", file);
+      for (const file of selectedFiles) {
+        if (!file.type.startsWith("image/")) {
+          continue;
+        }
 
-      await fetch("/api/photos", {
-        method: "POST",
-        headers,
-        body: formData,
-      });
+        const finalFile = await compressImageUnder8MB(file);
+
+        const formData = new FormData();
+        formData.append("photo", finalFile);
+
+        const response = await fetch("/api/photos", {
+          method: "POST",
+          headers,
+          body: formData,
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText);
+        }
+      }
+
+      await loadPhotos();
+    } catch (error) {
+      alert(error.message || "Upload failed");
+    } finally {
+      setUploading(false);
+      event.target.value = "";
     }
-
-    await loadPhotos();
-    setUploading(false);
-    event.target.value = "";
   }
 
   async function deletePhoto(id) {
