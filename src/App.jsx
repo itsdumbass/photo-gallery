@@ -72,6 +72,8 @@ function App() {
   const [photos, setPhotos] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const [selectedPhotoIds, setSelectedPhotoIds] = useState([]);
 
   async function getAuthHeaders() {
     if (!user) return {};
@@ -187,14 +189,54 @@ function App() {
       event.target.value = "";
     }
   }
-
+  function togglePhotoSelection(id) {
+    setSelectedPhotoIds((current) =>
+      current.includes(id)
+        ? current.filter((photoId) => photoId !== id)
+        : [...current, id]
+    );
+  
+    setOpenMenuId(null);
+  }
+  
+  function downloadPhoto(photo) {
+    if (!photo.displayUrl) {
+      alert("This image is unavailable.");
+      return;
+    }
+  
+    const link = document.createElement("a");
+    link.href = photo.displayUrl;
+    link.download = photo.filename || "photo";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  
+    setOpenMenuId(null);
+  }
   async function deletePhoto(id) {
+    const confirmed = window.confirm(
+      "Are you sure you want to permanently delete this photo?"
+    );
+
+    if (!confirmed) return;
+
     const headers = await getAuthHeaders();
 
-    await fetch(`/api/photos/${id}`, {
+    const response = await fetch(`/api/photos/${id}`, {
       method: "DELETE",
       headers,
     });
+
+    if (!response.ok) {
+      alert("The photo could not be deleted.");
+      return;
+    }
+
+    setSelectedPhotoIds((current) =>
+      current.filter((photoId) => photoId !== id)
+    );
+    setOpenMenuId(null);
 
     await loadPhotos();
   }
@@ -271,19 +313,56 @@ function App() {
       ) : (
         <section id="gallery" className="gallery">
           {photos.map((photo) => (
-            <div className="photoCard" key={photo.id}>
+            <div
+              className={`photoCard ${
+                selectedPhotoIds.includes(photo.id) ? "selected" : ""
+              }`}
+              key={photo.id}
+            >
               {photo.displayUrl ? (
                 <img src={photo.displayUrl} alt={photo.filename} />
               ) : (
                 <div className="imageError">Image could not load</div>
               )}
-
-              <button
-                className="deleteButton"
-                onClick={() => deletePhoto(photo.id)}
-              >
-                Delete
-              </button>
+            
+              {selectedPhotoIds.includes(photo.id) && (
+                <span className="selectedBadge">Selected</span>
+              )}
+            
+              <div className="photoMenuContainer">
+                <button
+                  className="menuButton"
+                  aria-label="Photo options"
+                  onClick={() =>
+                    setOpenMenuId((current) =>
+                      current === photo.id ? null : photo.id
+                    )
+                  }
+                >
+                  {"\u22EE"}
+                </button>
+                
+                {openMenuId === photo.id && (
+                  <div className="photoMenu">
+                    <button onClick={() => togglePhotoSelection(photo.id)}>
+                      {selectedPhotoIds.includes(photo.id)
+                        ? "Deselect"
+                        : "Select"}
+                    </button>
+                      
+                    <button onClick={() => downloadPhoto(photo)}>
+                      Download
+                    </button>
+                      
+                    <button
+                      className="deleteMenuOption"
+                      onClick={() => deletePhoto(photo.id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </section>

@@ -106,22 +106,7 @@ body {
   position: relative;
 }
 
-.deleteButton {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.75);
-  color: white;
-  padding: 8px 12px;
-  cursor: pointer;
-  font-weight: bold;
-}
 
-.deleteButton:hover {
-  background: black;
-}
 
 .actions {
   display: flex;
@@ -258,4 +243,81 @@ body {
     gap: 20px;
     overflow-x: auto;
   }
+}
+.photoCard.selected {
+  border: 2px solid #dc143c;
+}
+
+.photoMenuContainer {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 5;
+}
+
+.menuButton {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 50%;
+  background: rgba(10, 10, 12, 0.82);
+  color: white;
+  cursor: pointer;
+  font-size: 24px;
+  line-height: 1;
+}
+
+.menuButton:hover {
+  background: #dc143c;
+}
+
+.photoMenu {
+  position: absolute;
+  top: 42px;
+  right: 0;
+  width: 150px;
+  overflow: hidden;
+  border: 1px solid #3a3a40;
+  border-radius: 6px;
+  background: #18181b;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+.photoMenu button {
+  display: block;
+  width: 100%;
+  padding: 11px 14px;
+  border: 0;
+  background: transparent;
+  color: #eeeeef;
+  cursor: pointer;
+  text-align: left;
+}
+
+.photoMenu button:hover {
+  background: #29292e;
+}
+
+.photoMenu .deleteMenuOption {
+  color: #ff496c;
+}
+
+.photoMenu .deleteMenuOption:hover {
+  background: #dc143c;
+  color: white;
+}
+
+.selectedBadge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 6px 9px;
+  border-radius: 4px;
+  background: #dc143c;
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
 }
