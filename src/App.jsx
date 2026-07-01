@@ -1,3 +1,4 @@
+import JSZip from "jszip";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
 import { auth, googleProvider } from "./firebase";
@@ -68,6 +69,7 @@ async function compressImageUnder8MB(file) {
 }
 
 function App() {
+  const [processingSelected, setProcessingSelected] = useState(false);
   const [user, setUser] = useState(null);
   const [photos, setPhotos] = useState([]);
   const [uploading, setUploading] = useState(false);
@@ -214,6 +216,85 @@ function App() {
   
     setOpenMenuId(null);
   }
+  async function deleteAllSelected() {
+    if (selectedPhotoIds.length === 0) return;
+
+    const confirmed = window.confirm(
+      `Permanently delete ${selectedPhotoIds.length} selected photos?`
+    );
+
+    if (!confirmed) return;
+
+    setProcessingSelected(true);
+
+    try {
+      const headers = await getAuthHeaders();
+
+      const responses = await Promise.all(
+        selectedPhotoIds.map((id) =>
+          fetch(`/api/photos/${id}`, {
+            method: "DELETE",
+            headers,
+          })
+        )
+      );
+
+      if (responses.some((response) => !response.ok)) {
+        throw new Error("Some photos could not be deleted.");
+      }
+
+      setSelectedPhotoIds([]);
+      setOpenMenuId(null);
+      await loadPhotos();
+    } catch (error) {
+      alert(error.message);
+    } finally {
+      setProcessingSelected(false);
+    }
+  }
+
+  async function downloadAllSelected() {
+    const selectedPhotos = photos.filter((photo) =>
+      selectedPhotoIds.includes(photo.id)
+    );
+
+    if (selectedPhotos.length === 0) return;
+
+    setProcessingSelected(true);
+
+    try {
+      const zip = new JSZip();
+
+      for (let index = 0; index < selectedPhotos.length; index++) {
+        const photo = selectedPhotos[index];
+
+        if (!photo.displayUrl) continue;
+
+        const response = await fetch(photo.displayUrl);
+        const blob = await response.blob();
+        const filename = `${index + 1}-${photo.filename || "photo.jpg"}`;
+
+        zip.file(filename, blob);
+      }
+
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      const downloadUrl = URL.createObjectURL(zipBlob);
+      const link = document.createElement("a");
+
+      link.href = downloadUrl;
+      link.download = "selected-photos.zip";
+
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      URL.revokeObjectURL(downloadUrl);
+    } catch {
+      alert("The selected photos could not be downloaded.");
+    } finally {
+      setProcessingSelected(false);
+    }
+  }
   async function deletePhoto(id) {
     const confirmed = window.confirm(
       "Are you sure you want to permanently delete this photo?"
@@ -299,6 +380,28 @@ function App() {
           )}
         </div>
       </header>
+      
+      {user && selectedPhotoIds.length > 0 && (
+        <div className="selectedActions">
+          <span>{selectedPhotoIds.length} selected</span>
+      
+          <button
+            className="downloadAllButton"
+            disabled={processingSelected}
+            onClick={downloadAllSelected}
+          >
+            Download All
+          </button>
+      
+          <button
+            className="deleteAllButton"
+            disabled={processingSelected}
+            onClick={deleteAllSelected}
+          >
+            {processingSelected ? "Working..." : "Delete All"}
+          </button>
+        </div>
+      )}
 
       {!user ? (
         <section className="emptyState">
