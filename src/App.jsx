@@ -338,7 +338,7 @@ function App() {
   return (
     <div className="app">
     <nav className="navbar">
-      <a className="brand" href="#home">My Photo Board</a>
+      <a className="brand" href="#home">Photo Gallery</a>
 
       <div className="navLinks">
         <a href="#home">Home</a>
@@ -380,7 +380,7 @@ function App() {
           )}
         </div>
       </header>
-      
+
       {user && selectedPhotoIds.length > 0 && (
         <div className="selectedActions">
           <span>{selectedPhotoIds.length} selected</span>
