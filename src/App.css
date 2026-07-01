@@ -217,15 +217,6 @@ body {
   color: #ffffff;
 }
 
-.deleteButton {
-  border-radius: 6px;
-  background: rgba(12, 12, 14, 0.9);
-}
-
-.deleteButton:hover {
-  background: #dc143c;
-}
-
 .futureSection {
   min-height: 50vh;
   padding: 80px 0;
@@ -320,4 +311,42 @@ body {
   color: white;
   font-size: 12px;
   font-weight: 700;
+}
+
+.menuButton {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition:
+    opacity 160ms ease,
+    transform 160ms ease,
+    visibility 160ms ease,
+    background 160ms ease;
+}
+
+.photoCard:hover .menuButton,
+.photoCard:focus-within .menuButton {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.photoCard img {
+  transition: transform 250ms ease;
+  transform-origin: center;
+}
+
+.photoCard:hover img {
+  transform: scale(0.94);
+}
+
+@media (hover: none) {
+  .menuButton {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    pointer-events: auto;
+  }
 }
