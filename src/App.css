@@ -143,3 +143,123 @@ body {
   cursor: pointer;
   font-weight: bold;
 }
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  background: #0b0b0d;
+  color: #eeeeef;
+}
+
+.app {
+  background: #0b0b0d;
+}
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  min-height: 68px;
+  margin: -24px -24px 48px;
+  padding: 12px 5%;
+  background: rgba(11, 11, 13, 0.96);
+  border-bottom: 1px solid #303036;
+}
+
+.brand {
+  color: #dc143c;
+  font-size: 20px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.navLinks {
+  display: flex;
+  gap: 28px;
+}
+
+.navLinks a {
+  color: #dc143c;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.navLinks a:hover {
+  color: #ffffff;
+}
+
+.topBar h1,
+.emptyState h2,
+.futureSection h2 {
+  color: #dc143c;
+}
+
+.topBar p,
+.emptyState,
+.userEmail {
+  color: #99999f;
+}
+
+.photoCard {
+  border: 1px solid #303036;
+  border-radius: 6px;
+  background: #17171a;
+  box-shadow: none;
+}
+
+.uploadButton,
+.secondaryButton {
+  border: 1px solid #dc143c;
+  border-radius: 6px;
+  background: #dc143c;
+  color: #ffffff;
+}
+
+.secondaryButton {
+  background: transparent;
+  color: #dc143c;
+}
+
+.uploadButton:hover,
+.secondaryButton:hover {
+  background: #f02c54;
+  color: #ffffff;
+}
+
+.deleteButton {
+  border-radius: 6px;
+  background: rgba(12, 12, 14, 0.9);
+}
+
+.deleteButton:hover {
+  background: #dc143c;
+}
+
+.futureSection {
+  min-height: 50vh;
+  padding: 80px 0;
+  border-top: 1px solid #303036;
+}
+
+@media (max-width: 750px) {
+  .navbar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .navLinks {
+    width: 100%;
+    gap: 20px;
+    overflow-x: auto;
+  }
+}
+
+body {
+  background: red !important;
+}

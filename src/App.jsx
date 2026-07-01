@@ -214,7 +214,17 @@ function App() {
 
   return (
     <div className="app">
-      <header className="topBar">
+    <nav className="navbar">
+      <a className="brand" href="#home">My Photo Board</a>
+
+      <div className="navLinks">
+        <a href="#home">Home</a>
+        <a href="#about">About</a>
+        <a href="#album">Album</a>
+        <a href="#gallery">Gallery</a>
+      </div>
+    </nav>
+      <header id="home" className="topBar">
         <div>
           <h1>My Photo Board</h1>
           <p>Your private Pinterest-style gallery.</p>
@@ -259,7 +269,7 @@ function App() {
           <p>Add photos and they will stay saved after refresh.</p>
         </section>
       ) : (
-        <section className="gallery">
+        <section id="gallery" className="gallery">
           {photos.map((photo) => (
             <div className="photoCard" key={photo.id}>
               {photo.displayUrl ? (
@@ -278,6 +288,13 @@ function App() {
           ))}
         </section>
       )}
+      <section id="about" className="futureSection">
+        <h2>About</h2>
+      </section>
+
+      <section id="album" className="futureSection">
+        <h2>Albums</h2>
+      </section>
     </div>
   );
 }
