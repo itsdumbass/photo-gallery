@@ -7,19 +7,21 @@ function About() {
         <Link className="brand" to="/">
           Photo Gallery
         </Link>
+
+        <Link className="backLink" to="/">
+          Back to Gallery
+        </Link>
       </header>
 
       <main className="aboutContent">
         <h1>About</h1>
 
-        <p>
-          Photo Gallery is a private place to preserve, organize, and revisit
-          the photographs that matter most to you.
-        </p>
-
-        <Link className="backLink" to="/">
-          Back to Gallery
-        </Link>
+        <div className="aboutCopy">
+          <p>
+            Photo Gallery is a private place to preserve, organize, and revisit
+            the photographs that matter most to you.
+          </p>
+        </div>
       </main>
     </div>
   );

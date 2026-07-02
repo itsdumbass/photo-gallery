@@ -443,3 +443,76 @@ body {
   font-size: 20px;
   line-height: 1.7;
 }
+.aboutPage {
+  min-height: 100vh;
+  background: #0b0b0d;
+  color: #eeeeef;
+}
+
+.aboutHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72px;
+  padding: 0 5%;
+  border-bottom: 1px solid #303036;
+}
+
+.aboutContent {
+  display: grid;
+  grid-template-areas:
+    "empty title"
+    "copy copy";
+  grid-template-columns: 1fr minmax(300px, 620px);
+  gap: 80px 40px;
+  min-height: calc(100vh - 72px);
+  padding: 55px 5% 80px;
+}
+
+.aboutContent h1 {
+  grid-area: title;
+  justify-self: end;
+  margin: 0;
+  color: #dc143c;
+  font-size: 96px;
+  line-height: 1;
+  text-align: right;
+}
+
+.aboutCopy {
+  grid-area: copy;
+  align-self: end;
+  max-width: 680px;
+}
+
+.aboutCopy p {
+  margin: 0;
+  color: #b0b0b6;
+  font-size: 20px;
+  line-height: 1.8;
+}
+
+.backLink {
+  color: #dc143c;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+@media (max-width: 700px) {
+  .aboutContent {
+    grid-template-areas:
+      "title"
+      "copy";
+    grid-template-columns: 1fr;
+    gap: 60px;
+    padding-top: 40px;
+  }
+
+  .aboutContent h1 {
+    font-size: 58px;
+  }
+
+  .aboutCopy p {
+    font-size: 17px;
+  }
+}
