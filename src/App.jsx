@@ -344,7 +344,7 @@ function App() {
       <div className="navLinks">
         <a href="#home">Home</a>
         <Link to="/about">About</Link>
-        <a href="#album">Album</a>
+        <Link to="/albums">Album</Link>
         <a href="#gallery">Gallery</a>
       </div>
     </nav>
@@ -473,9 +473,6 @@ function App() {
       )}
       
 
-      <section id="album" className="futureSection">
-        <h2>Albums</h2>
-      </section>
       <footer className="siteFooter">
         <span>Photo Gallery</span>
         <Link to="/about">About</Link>
