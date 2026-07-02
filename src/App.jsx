@@ -1,4 +1,5 @@
 import JSZip from "jszip";
+import { Link } from "react-router";
 import { useEffect, useState } from "react";
 import { onAuthStateChanged, signInWithPopup, signOut } from "firebase/auth";
 import { auth, googleProvider } from "./firebase";
@@ -477,6 +478,10 @@ function App() {
       <section id="album" className="futureSection">
         <h2>Albums</h2>
       </section>
+      <footer className="siteFooter">
+        <span>Photo Gallery</span>
+        <Link to="/about">About</Link>
+      </footer>
     </div>
   );
 }

@@ -397,3 +397,49 @@ body {
   cursor: wait;
   opacity: 0.55;
 }
+
+.siteFooter {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 80px;
+  padding: 28px 0;
+  border-top: 1px solid #303036;
+  color: #88888f;
+}
+
+.siteFooter a,
+.backLink {
+  color: #dc143c;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.aboutPage {
+  min-height: 100vh;
+  background: #0b0b0d;
+  color: #eeeeef;
+}
+
+.aboutHeader {
+  padding: 24px 5%;
+  border-bottom: 1px solid #303036;
+}
+
+.aboutContent {
+  max-width: 900px;
+  padding: 100px 5%;
+}
+
+.aboutContent h1 {
+  margin: 0 0 28px;
+  color: #dc143c;
+  font-size: clamp(64px, 10vw, 140px);
+}
+
+.aboutContent p {
+  max-width: 680px;
+  margin-bottom: 38px;
+  color: #b0b0b6;
+  font-size: 20px;
+  line-height: 1.7;
+}
